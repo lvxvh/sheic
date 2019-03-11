@@ -16,15 +16,15 @@ class PreeicSpider(scrapy.Spider):
     def parse(self, response):
         # f = open("./test.html", 'w+')
         # f.write(response.text)
-        total_page = re.search(r'(?<=共)(\d+)(?=页)', response.text)
+        total_page = re.search(r'共(\d+)页', response.text).group(1)
         all_pages = [response.request.url + "?currentPage=" + str(i + 1) for i in range(int(total_page))]
         for page in all_pages:
             yield Request(url=page,
                           callback=self.parse_page)
 
     def parse_page(self, response):
-        current_page = re.search(r'(?<=当前第)(\d+)(?=页)', response.text)
-        total_page = re.search(r'(?<=共)(\d+)(?=页)', response.text)
+        current_page = re.search(r'当前第(\d+)页', response.text).group(1)
+        total_page = re.search(r'共(\d+)页', response.text).group(1)
         print("爬取进度" ,current_page, " / ", total_page)
         eia_id_list = re.findall(r'(?<=openInfo\(\')(.*)(?=\'\))', response.text)
 

@@ -73,7 +73,7 @@ ITEM_PIPELINES = {
 }
 
 # FILES_STORE = 'Z:\\Program Files\\Python\\Stats\\sheic\\files'
-FILES_STORE = '/sheic_files'
+FILES_STORE = '/root/sheic_files'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

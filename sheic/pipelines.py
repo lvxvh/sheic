@@ -17,7 +17,7 @@ class DuplicatesPipeline(object):
     def __init__(self):
         self.connect = pymysql.connect("47.102.146.137", "greenment_writer", "Greenment2019!", "zone")
         self.cursor = self.connect.cursor()
-        print("DuplicatesPipeline Mysql connected.")
+        print("DuplicatesPipeline Mysql connected.", flush=True)
 
     def process_item(self, item, spider):
         if isinstance(item, PreEicBasic):

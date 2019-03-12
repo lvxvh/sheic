@@ -34,7 +34,7 @@ class PosteiaSpider(scrapy.Spider):
     def parse_page(self, response):
         current_page = re.search(r'当前第(\d+)页', response.text).group(1)
         total_page = re.search(r'共(\d+)页', response.text).group(1)
-        print("爬取进度" ,current_page, " / ", total_page)
+        print("爬取进度" ,current_page, " / ", total_page, flush=True)
         eia_id_list = re.findall(r'(?<=openInfo\(\')(.*)(?=\'\))', response.text)
 
         for idx, id in enumerate(eia_id_list):
@@ -49,7 +49,7 @@ class PosteiaSpider(scrapy.Spider):
         # with open("./test.html", 'wb') as f:
         #     f.write(response.body)
         id = response.meta.get('id')
-        print("current item: ", response.meta.get('count'))
+        print("current item: ", response.meta.get('count'), flush=True)
         if re.search(r'环评批文日期.*?\s*?<span>(.*?)<', response.text, re.DOTALL).group(1) != "":
             proj_basic_info = ProjBasicInfo()
             proj_basic_info['id'] = id

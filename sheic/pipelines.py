@@ -9,7 +9,8 @@ from scrapy import Request
 from scrapy.exceptions import DropItem
 from scrapy.pipelines.files import FilesPipeline
 
-from sheic.items import PreEicBasic, PreEicExtraInfo1, PreEicExtraInfo2, PreEicExtraInfo3, PreEicExtraInfo4
+from sheic.items import PreEicBasic, PreEicExtraInfo1, PreEicExtraInfo2, PreEicExtraInfo3, PreEicExtraInfo4, \
+    ProjBasicInfo, BuildPeriodInfo, AdjustPeriodInfo, FinalCheckInfo
 
 
 class DuplicatesPipeline(object):
@@ -209,3 +210,206 @@ class SaveMetaDataPipeline(object):
             except Exception as error:
                 self.connect.rollback()
                 print("Error during access mysql: ", error)
+
+
+class PostDuplicatesPipeline(object):
+    def __init__(self):
+        self.connect = pymysql.connect("47.102.146.137", "greenment_writer", "Greenment2019!", "zone")
+        self.cursor = self.connect.cursor()
+        print("DuplicatesPipeline Mysql connected.")
+
+    def process_item(self, item, spider):
+        if isinstance(item, ProjBasicInfo):
+            sql = "select * from eia_proj_basic_info where id = '%s'" % (item["id"])
+            try:
+                self.cursor.execute(sql)
+                result = self.cursor.fetchone()
+                if result is not None:
+                    raise DropItem("Duplicate item found: %s" % item["id"])
+                else:
+                    return item
+            except Exception as error:
+                print("Error during access mysql: ", error)
+                raise DropItem("Duplicate item found: %s" % item["id"])
+        elif isinstance(item, BuildPeriodInfo):
+            sql = "select * from eia_build_period_info where id = '%s'" % (item["id"])
+            try:
+                self.cursor.execute(sql)
+                result = self.cursor.fetchone()
+                if result is not None:
+                    raise DropItem("Duplicate item found: %s" % item["id"])
+                else:
+                    return item
+            except Exception as error:
+                print("Error during access mysql: ", error)
+                raise DropItem("Duplicate item found: %s" % item["id"])
+        elif isinstance(item, AdjustPeriodInfo):
+            sql = "select * from eia_adjust_period_info where id = '%s'" % (item["id"])
+            try:
+                self.cursor.execute(sql)
+                result = self.cursor.fetchone()
+                if result is not None:
+                    raise DropItem("Duplicate item found: %s" % item["id"])
+                else:
+                    return item
+            except Exception as error:
+                print("Error during access mysql: ", error)
+                raise DropItem("Duplicate item found: %s" % item["id"])
+        elif isinstance(item, FinalCheckInfo):
+            sql = "select * from eia_final_check_info where id = '%s'" % (item["id"])
+            try:
+                self.cursor.execute(sql)
+                result = self.cursor.fetchone()
+                if result is not None:
+                    raise DropItem("Duplicate item found: %s" % item["id"])
+                else:
+                    return item
+            except Exception as error:
+                print("Error during access mysql: ", error)
+                raise DropItem("Duplicate item found: %s" % item["id"])
+
+class PostSaveFilesPipeline(FilesPipeline):
+    def get_media_requests(self, item, info):
+        if isinstance(item, BuildPeriodInfo):
+            env_measures_meta = {'id': item['id'], 'type': 'env_measure_build'}
+            env_monitor_meta = {'id': item['id'], 'type': 'env_monitor_build'}
+            for url in item['env_measures_urls']:
+                yield Request(url=url, meta=env_measures_meta)
+            for url in item['env_monitor_result_urls']:
+                yield Request(url=url, meta=env_monitor_meta)
+
+        elif isinstance(item, AdjustPeriodInfo):
+            adjust_report_meta = {'id': item['id'], 'type': 'adjust_report'}
+            env_measures_meta = {'id': item['id'], 'type': 'env_measure_adjust'}
+            for url in item['adjust_report_urls']:
+                yield Request(url=url, meta=adjust_report_meta)
+            for url in item['env_measures_urls']:
+                yield Request(url=url, meta=env_measures_meta)
+
+        elif isinstance(item, FinalCheckInfo):
+            check_report_meta = {'id': item['id'], 'type': 'check_report_final'}
+            for url in item['check_report_urls']:
+                yield Request(url=url, meta=check_report_meta)
+
+    def file_path(self, request, response=None, info=None):
+        original_path = super(PostSaveFilesPipeline, self).file_path(request, response=None, info=None)
+        file_id = original_path.split('=')[1]
+        return '%s/%s' % (request.meta.get('type'), file_id + '.pdf')
+
+    def item_completed(self, results, item, info):
+        if isinstance(item, BuildPeriodInfo):
+            env_measures_paths = ''
+            env_monitor_result_paths = ''
+            for ok, x in results:
+                if not ok:
+                    raise DropItem("Item contains no files")
+                else:
+                    if x['path'].startswith('env_measure_build'):
+                        env_measures_paths += x['path'] + ';'
+                    else:
+                        env_monitor_result_paths += x['path'] + ';'
+
+            item['env_measures_paths'] = env_measures_paths
+            item['env_monitor_result_paths'] = env_monitor_result_paths
+
+        elif isinstance(item, AdjustPeriodInfo):
+            adjust_report_paths = ''
+            env_measures_paths = ''
+            for ok, x in results:
+                if not ok:
+                    raise DropItem("Item contains no files")
+                else:
+                    if x['path'].startswith('adjust_report'):
+                        adjust_report_paths += x['path'] + ';'
+                    else:
+                        env_measures_paths += x['path'] + ';'
+
+            item['adjust_report_paths'] = adjust_report_paths
+            item['env_measures_paths'] = env_measures_paths
+
+        elif isinstance(item, FinalCheckInfo):
+            check_report_paths = ''
+            for ok, x in results:
+                if not ok:
+                    raise DropItem("Item contains no files")
+                else:
+                    check_report_paths += x['path'] + ';'
+
+            item['check_report_paths'] = check_report_paths
+
+        return item
+
+class PostSaveMetaDataPipeline(object):
+    def __init__(self):
+        self.connect = pymysql.connect("47.102.146.137", "greenment_writer", "Greenment2019!", "zone")
+        self.cursor = self.connect.cursor()
+        print("SaveDataPipeline Mysql connected.")
+
+    def process_item(self, item, spider):
+        if isinstance(item, ProjBasicInfo):
+            sql = "insert into " \
+                  "eia_proj_basic_info(id, proj_name, build_unit, type,location, " \
+                  "proj_detail, design_unit, plan_start_date, " \
+                  "eia_reg_number, eia_approv_number, eia_approv_date, " \
+                  "contact, tel, email)" \
+                  " VALUES " \
+                  "('%s', '%s', '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" % \
+                  (item['id'], item["proj_name"], item["build_unit"], item["type"],
+                   item["location"], item["proj_detail"], item["design_unit"],
+                   item["plan_start_date"], item['eia_reg_number'], item['eia_approv_number'],
+                   item['eia_approv_date'], item['contact'], item['tel'],
+                   item['email'])
+            try:
+                self.cursor.execute(sql)
+                self.connect.commit()
+                print("Persisted eia basic info of %s" % item["id"])
+            except Exception as error:
+                self.connect.rollback()
+                print("Error during access mysql: ", error)
+
+        elif isinstance(item, BuildPeriodInfo):
+            sql = "insert into " \
+                  "eia_build_period_info(id, actual_start_date, env_measures_paths, " \
+                  "env_monitor_result_paths)" \
+                  " VALUES " \
+                  "('%s','%s','%s','%s')" % \
+                  (item['id'], item["actual_start_date"], item["env_measures_paths"],
+                   item["env_monitor_result_paths"])
+            try:
+                self.cursor.execute(sql)
+                self.connect.commit()
+                print("Persisted eia build period info of %s" % item["id"])
+            except Exception as error:
+                self.connect.rollback()
+                print("Error during access mysql: ", error)
+
+        elif isinstance(item, AdjustPeriodInfo):
+            sql = "insert into " \
+                  "eia_adjust_period_info(id, finish_date, adjust_start_date," \
+                  " adjust_report_paths, env_measures_paths) " \
+                  " VALUES " \
+                  "('%s','%s','%s','%s', '%s')" % \
+                  (item['id'], item["finish_date"], item["adjust_start_date"],
+                   item["adjust_report_paths"], item['env_measures_paths'])
+            try:
+                self.cursor.execute(sql)
+                self.connect.commit()
+                print("Persisted eia adjust period info of %s" % item["id"])
+            except Exception as error:
+                self.connect.rollback()
+                print("Error during access mysql: ", error)
+
+        elif isinstance(item, FinalCheckInfo):
+            sql = "insert into " \
+                  "eia_final_check_info(id, publish_date, check_report_paths) " \
+                  " VALUES " \
+                  "('%s','%s','%s')" % \
+                  (item['id'], item["publish_date"], item["check_report_paths"])
+            try:
+                self.cursor.execute(sql)
+                self.connect.commit()
+                print("Persisted eia final period info of %s" % item["id"])
+            except Exception as error:
+                self.connect.rollback()
+                print("Error during access mysql: ", error)
+        return item

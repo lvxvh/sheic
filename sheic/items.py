@@ -63,3 +63,51 @@ class PreEicExtraInfo4(scrapy.Item):
     pblc_stmt_path = scrapy.Field()
     file_urls = scrapy.Field()
     files = scrapy.Field()
+
+
+# 环评事中事后信息
+
+class ProjBasicInfo(scrapy.Item):
+    id = scrapy.Field()
+    proj_name = scrapy.Field()  # 项目名称
+    build_unit = scrapy.Field()  # 建设单位
+    type = scrapy.Field()  # 所属行业
+    location = scrapy.Field()  # 建设地点
+    proj_detail = scrapy.Field()  # 项目基本信息
+    design_unit = scrapy.Field()  # 设计单位
+    plan_start_date = scrapy.Field()  # 计划开工日期
+    eia_reg_number = scrapy.Field()  # 环评项目登记号
+    eia_approv_number = scrapy.Field()  # 环评批文文号
+    eia_approv_date = scrapy.Field()  # 环评批文日期
+    contact = scrapy.Field()  # 联系人
+    tel = scrapy.Field()  # 联系电话
+    email = scrapy.Field()  # 电子邮箱
+
+
+class BuildPeriodInfo(scrapy.Item):
+    id = scrapy.Field()
+    actual_start_date = scrapy.Field()  # 实际开工日期
+    env_measures_paths = scrapy.Field()  # 施工期环保措施落实情况pdf
+    env_measures_urls = scrapy.Field()
+    env_monitor_result_paths = scrapy.Field()  # 施工期环境监测结果
+    env_monitor_result_urls = scrapy.Field()
+    files = scrapy.Field()
+
+
+class AdjustPeriodInfo(scrapy.Item):
+    id = scrapy.Field()
+    finish_date = scrapy.Field()  # 竣工日期
+    adjust_start_date = scrapy.Field()  # 开始调试日期
+    adjust_report_paths = scrapy.Field()  # 非重大调整报告
+    adjust_report_urls = scrapy.Field()
+    env_measures_paths = scrapy.Field()  # 环保措施落实情况
+    env_measures_urls = scrapy.Field()
+    files = scrapy.Field()
+
+
+class FinalCheckInfo(scrapy.Item):
+    id = scrapy.Field()
+    publish_date = scrapy.Field()  # 公示起始日期
+    check_report_paths = scrapy.Field()  # 验收报告
+    check_report_urls = scrapy.Field()
+    files = scrapy.Field()

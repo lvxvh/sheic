@@ -65,12 +65,6 @@ DOWNLOAD_DELAY = 1
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    'sheic.pipelines.DuplicatesPipeline': 100,
-    'sheic.pipelines.SaveFilesPipeline': 200,
-    'sheic.pipelines.SaveMetaDataPipeline': 300,
-
-}
 
 # FILES_STORE = 'Z:\\Program Files\\Python\\Stats\\sheic\\files'
 FILES_STORE = '/root/sheic_files'

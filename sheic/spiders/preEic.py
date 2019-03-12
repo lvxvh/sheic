@@ -12,6 +12,13 @@ class PreeicSpider(scrapy.Spider):
     name = 'preEic'
     allowed_domains = ['xxgk.eic.sh.cn']
     start_urls = ['http://xxgk.eic.sh.cn/jsp/view/eiaReportList.jsp']
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'sheic.pipelines.DuplicatesPipeline': 100,
+            'sheic.pipelines.SaveFilesPipeline': 200,
+            'sheic.pipelines.SaveMetaDataPipeline': 300,
+        }
+    }
 
     def parse(self, response):
         # f = open("./test.html", 'w+')

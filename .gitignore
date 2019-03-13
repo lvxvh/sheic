@@ -2,3 +2,5 @@
 /venv/
 /.gitignore
 /.idea/
+sheic/spiders/__pycache__/postEia.cpython-36.pyc
+test.html

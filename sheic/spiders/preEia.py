@@ -8,8 +8,8 @@ from scrapy import Request
 from sheic.items import PreEicBasic, PreEicExtraInfo1, PreEicExtraInfo2, PreEicExtraInfo3, PreEicExtraInfo4
 
 
-class PreeicSpider(scrapy.Spider):
-    name = 'preEic'
+class PreeiaSpider(scrapy.Spider):
+    name = 'preEia'
     allowed_domains = ['xxgk.eic.sh.cn']
     start_urls = ['http://xxgk.eic.sh.cn/jsp/view/eiaReportList.jsp']
     custom_settings = {

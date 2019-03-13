@@ -14,7 +14,9 @@ BOT_NAME = 'sheic'
 SPIDER_MODULES = ['sheic.spiders']
 NEWSPIDER_MODULE = 'sheic.spiders'
 
-LOG_LEVEL = 'WARNING'
+LOG_LEVEL = 'INFO'
+LOG_FILE = 'sheicSpider.log'
+LOG_STDOUT = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'sheic (+http://www.yourdomain.com)'
@@ -47,9 +49,11 @@ DOWNLOAD_DELAY = 1
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'sheic.middlewares.SheicSpiderMiddleware': 543,
-#}
+SPIDER_MIDDLEWARES = {
+   'scrapy_deltafetch.DeltaFetch': 100,
+}
+
+DELTAFETCH_ENABLED = True
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
@@ -67,7 +71,7 @@ DOWNLOAD_DELAY = 1
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 # FILES_STORE = 'Z:\\Program Files\\Python\\Stats\\sheic\\files'
-FILES_STORE = '/root/sheic_files'
+FILES_STORE = '/mnt/sheic_files'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

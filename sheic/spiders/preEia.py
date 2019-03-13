@@ -35,18 +35,19 @@ class PreeiaSpider(scrapy.Spider):
         print("爬取进度" ,current_page, " / ", total_page, flush=True)
         eia_id_list = re.findall(r'(?<=openInfo\(\')(.*)(?=\'\))', response.text)
 
-        for id in eia_id_list:
+        for idx, id in enumerate(eia_id_list):
             eia_id, type = id.split("','")[0], id.split("','")[1]
             detail_page = 'http://xxgk.eic.sh.cn' \
                           '/jsxmxxgk/eiareport/action/jsxm_eiaReportDetail.do?from=jsxm&stEiaId=' \
                           + str(eia_id) + '&type=' + str(type)
             yield Request(url=detail_page,
                           callback=self.parse_detail,
-                          meta={'eia_id': eia_id})
+                          meta={'eia_id': eia_id, 'count': (int(current_page)-1)*20 + idx})
 
     def parse_detail(self, response):
         basicItem = PreEicBasic()
         eia_id = response.meta.get('eia_id')
+        print("current item: ", response.meta.get('count'), flush=True)
         basicItem['eia_id'] = eia_id
         basicItem['proj_name'] = re.search(r'项目名称</div>.*?>(.*?)</div>', response.text, re.DOTALL).group(1).replace(
             '\n', '').strip()

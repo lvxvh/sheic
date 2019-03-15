@@ -26,9 +26,9 @@ class PreeiaSpider(scrapy.Spider):
         # f.write(response.text)
         total_page = re.search(r'共(\d+)页', response.text).group(1)
         all_pages = [response.request.url + "?currentPage=" + str(i + 1) for i in range(int(total_page))]
-        # for page in all_pages:
-        #     yield Request(url=page,
-        #                   callback=self.parse_page)
+        for page in all_pages:
+            yield Request(url=page,
+                          callback=self.parse_page)
 
     def parse_page(self, response):
         current_page = re.search(r'当前第(\d+)页', response.text).group(1)

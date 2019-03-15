@@ -82,7 +82,6 @@ class DuplicatesPipeline(object):
                 print("Error during access mysql: ", error)
                 raise DropItem("Duplicate item found: %s" % item["eia_id"])
 
-
 class SaveFilesPipeline(FilesPipeline):
     def get_media_requests(self, item, info):
         if isinstance(item, PreEicExtraInfo1):
@@ -122,7 +121,6 @@ class SaveFilesPipeline(FilesPipeline):
             item['env_report_path'] = file_paths[0]
             item['pblc_stmt_path'] = file_paths[1]
         return item
-
 
 class SaveMetaDataPipeline(object):
     def __init__(self):
@@ -210,7 +208,6 @@ class SaveMetaDataPipeline(object):
             except Exception as error:
                 self.connect.rollback()
                 print("Error during access mysql: ", error)
-
 
 class PostDuplicatesPipeline(object):
     def __init__(self):

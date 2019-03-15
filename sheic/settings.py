@@ -15,7 +15,7 @@ SPIDER_MODULES = ['sheic.spiders']
 NEWSPIDER_MODULE = 'sheic.spiders'
 
 LOG_LEVEL = 'INFO'
-LOG_FILE = 'sheicSpider.log'
+
 LOG_STDOUT = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

@@ -19,7 +19,8 @@ class PosteiaSpider(scrapy.Spider):
             'sheic.pipelines.PostDuplicatesPipeline': 100,
             'sheic.pipelines.PostSaveFilesPipeline': 200,
             'sheic.pipelines.PostSaveMetaDataPipeline': 300,
-        }
+        },
+        'LOG_FILE' : 'postEia.log'
     }
 
     def parse(self, response):

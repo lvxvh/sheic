@@ -135,13 +135,13 @@ class SaveMetaDataPipeline(object):
                   "proj_detail, build_unit_name, build_unit_addr, " \
                   "build_unit_contact, build_unit_tel, eic_org_name, " \
                   "eic_org_cred_code, eic_org_addr, eic_org_contact, " \
-                  "eic_org_tel, email) VALUES " \
-                  "('%s', '%s', '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" % \
+                  "eic_org_tel, email, eia_type) VALUES " \
+                  "('%s', '%s', '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s', '%s')" % \
                   (item['eia_id'], item["proj_name"], item["location"], item["type"],
                    item["proj_detail"], item["build_unit_name"], item["build_unit_addr"],
                    item["build_unit_contact"], item['build_unit_tel'], item['eic_org_name'],
                    item['eic_org_cred_code'], item['eic_org_addr'], item['eic_org_contact'],
-                   item['eic_org_tel'], item['email'])
+                   item['eic_org_tel'], item['email'], item['eia_type'])
             try:
                 self.cursor.execute(sql)
                 self.connect.commit()

@@ -78,6 +78,10 @@ class PreeiaSpider(scrapy.Spider):
                                                                                                                  '').strip()
         basicItem['email'] = re.search(r'电子邮件</div>.*?>(.*?)</div>', response.text, re.DOTALL).group(1).replace('\n',
                                                                                                                 '').strip()
+        if re.search(r'公示日期', response.text) is not None:
+            basicItem['eia_type'] = "报告表"
+        else:
+            basicItem['eia_type'] = "报告书"
         yield basicItem
 
         if re.search(r'公示日期', response.text) is not None:

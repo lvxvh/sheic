@@ -24,6 +24,7 @@ class PreEicBasic(scrapy.Item):
     eic_org_contact = scrapy.Field()  # 环评机构联系人
     eic_org_tel = scrapy.Field()  # 环评机构电话
     email = scrapy.Field()  # 电子邮件
+    eia_type = scrapy.Field()
 
 
 # 环评文件
